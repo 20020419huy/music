@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        .container {
+            width: 90vw;
+            margin-left: 1vw;
+            box-shadow: 0 0 2px 0px black;
+            height: 96vh;
+            overflow-y: scroll;
+            overflow: -moz-scrollbars-none;
+        }
+        .container::-webkit-scrollbar { 
+            width: 0 !important;
+            display: none; 
+        }
+        .song {
+            width: 90vw;
+            text-align: center;
+            padding: 1vw;
+            position: fixed;
+            /* top: 2vh; */
+            background: #fff;
+            /* z-index: 2; */
+            /* opacity: 0.5; */
+        }
+        .song-status {
+            color: #ba4d67;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+        }
+        .song-name {
+            color: #282628;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 700;
+        }
+        .song-image-wrapper {
+            padding-left: 14vw;
+            padding-right: 14vw;
+        }
+        .song-image {
+            padding-top: 100%;
+            border-radius:50%;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+        .song-control {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content:space-around;
+        }
+        .song-control i {
+            color: #5b5a5b;
+        }
+        .song-control i.active {
+            color: #eb1b4c;
+        }
+        .play-button i {
+            color: #eb1b4c;
+            font-size: 40px;
+        }
+        input[type=range] {
+            color: #eb1b4c;
+        }
+        .progress {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 6px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: 0.2s;
+            transition: opacity 0.2s;
+        }
+
+        .progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 6px;
+            background-color: #eb1b4c;
+            cursor: pointer;
+        }
+        .list-song {
+            list-style: none;
+            background-color: #eee;
+            padding: 6px 16px 12px 16px;
+            overflow-y: scroll;
+            margin-top: 357px
+        }
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            margin-top: 12px;
+            background-color: #fff;
+            border-radius:2px;
+            box-shadow: 1px 1px 0px 0px #ccc;
+        }
+        .song-item-image {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            margin-right: 24px;
+            background-position: center center;
+            background-size: cover;
+        }
+        .song-item-description {
+            flex-grow: 1;
+        }
+        .song-item-name {
+            text-transform: capitalize;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #373637;
+        }
+        .song-item-author {
+            color: #949394;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+        }
+        .song-item-option {
+            color: #7b7a7b;
+            float: right;
+        }
+        .play-button-pause {
+            display: none;
+        }
+        .play-button-start {
+            display: none;
+        }
+        .play-button.play .play-button-pause {
+            display: inline-block;
+        }
+        .play-button:not(.play) .play-button-start {
+            display: inline-block;
+        }
+        .loop-button.active i {
+            color: #eb1b4c;
+        }
+        .random-button.active i {
+            color: #eb1b4c;
+        }
+        .song-item.active {
+            background-color: #ec1f55;
+        }
+        .song-item.active .song-item-name, .song-item.active .song-item-author, .song-item.active .song-item-option {
+            color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="song">
+            <p class="song-status">Now playing</p>
+            <h3 class="song-name"></h3>
+            <div class="song-image-wrapper"><div class="song-image"></div></div>
+            <ul class="song-control">
+                <li class="loop-button">
+                    <i class="fas fa-redo-alt"></i> 
+                </li>
+                <li class="back-button">
+                    <i class="fas fa-step-backward"></i>
+                </li>
+                <li class="play-button">
+                    <i class="fas fa-pause-circle play-button-pause"></i>
+                    <i class="fas fa-play-circle play-button-start"></i>
+                </li>
+                <li class="next-button">
+                    <i class="fas fa-step-forward"></i>
+                </li>
+                <li class="random-button">
+                    <i class="fas fa-random"></i>
+                </li>
+            </ul>
+            <input id="progress" class="progress" type="range" value="0" step="1" min="0" max="100">
+            <audio src=""></audio>
+        </div>
+       <ul class="list-song">
+       </ul>
+    </div>
+    <script>
+        var songs = {
+            song_image_animate: null,
+            audio: null,
+            current_index: 0,
+            is_play: false,
+            is_loop: false,
+            is_random: false,
+            songs_played: new Set(),
+            song_resouce: [
+                {
+                    name: 'Tự Tâm',
+                    author: 'Nguyễn Trần Trung Quân',
+                    image: './songs/images/1.jpg',
+                    mp3: './songs/mp3/1.mp3'
+                },
+                {
+                    name: 'Bước qua nhau',
+                    author: 'Vũ',
+                    image: './songs/images/2.jpg',
+                    mp3: './songs/mp3/2.mp3'
+                },
+                {
+                    name: 'Đế vương',
+                    author: 'Đình Dũng',
+                    image: './songs/images/3.jpg',
+                    mp3: './songs/mp3/3.mp3'
+                },
+                {
+                    name: 'At my worst',
+                    author: 'Pink Sweat$',
+                    image: './songs/images/4.jpg',
+                    mp3: './songs/mp3/4.mp3'
+                },
+                {
+                    name: 'Solo',
+                    author: 'Jennie',
+                    image: './songs/images/5.jpg',
+                    mp3: './songs/mp3/5.mp3'
+                },
+                {
+                    name: 'Lạ lùng',
+                    author: 'Vũ',
+                    image: './songs/images/6.jpg',
+                    mp3: './songs/mp3/6.mp3'
+                },
+                {
+                    name: 'Summer Time',
+                    author: 'Cinnamons x Evening Cinema',
+                    image: './songs/images/7.jpg',
+                    mp3: './songs/mp3/7.mp3'
+                },
+                {
+                    name: 'On the ground',
+                    author: 'Rose',
+                    image: './songs/images/8.jpg',
+                    mp3: './songs/mp3/8.mp3'
+                },
+                {
+                    name: 'Gone',
+                    author: 'rose',
+                    image: './songs/images/9.jpg',
+                    mp3: './songs/mp3/9.mp3'
+                },
+                {
+                    name: 'Animals',
+                    author: 'Maroon 5',
+                    image: './songs/images/10.jpg',
+                    mp3: './songs/mp3/10.mp3'
+                },
+                {
+                    name: 'Comethru',
+                    author: 'Jeremy Zucker',
+                    image: './songs/images/11.jpg',
+                    mp3: './songs/mp3/11.mp3'
+                },
+                {
+                    name: 'Girls like you',
+                    author: 'Maroon 5',
+                    image: './songs/images/12.jpg',
+                    mp3: './songs/mp3/12.mp3'
+                },
+                {
+                    name: 'Memories',
+                    author: 'Maroon 5',
+                    image: './songs/images/13.jpg',
+                    mp3: './songs/mp3/13.mp3'
+                },
+                {
+                    name: 'Chạy ngay đi',
+                    author: 'Sơn Tùng M-TP',
+                    image: './songs/images/14.jpg',
+                    mp3: './songs/mp3/14.mp3'
+                },
+            ],
+            getCurrentSong() {
+                return this.song_resouce[this.current_index]
+            }
+        }
+        start()
+        function start() {
+            render();
+            eventHandler();
+        }
+        function render() {
+            startRender()
+            renderCurrentSong()
+            renderListSong()
+          
+        }
+        function renderCurrentSong() {
+            var song = document.querySelector('.song')
+            var list_song = document.querySelector('.list-song')
+            document.querySelector('.song-name').innerText = songs.getCurrentSong().name
+            document.querySelector('.song-image').style.backgroundImage = `url(${songs.getCurrentSong().image})`
+            document.querySelector('audio').src = songs.getCurrentSong().mp3
+            document.querySelectorAll('source').forEach((element) => {
+                element.setAttribute('src', songs.getCurrentSong().mp3)
+            })
+            songs.song_image_animate = document.querySelector('.song-image').animate([
+                    { transform: 'rotate(0)' },
+                    { transform: 'rotate(360deg)' }
+                    ], {
+                    duration: 10000,
+                    iterations: Infinity
+                })
+            songs.song_image_animate.pause()
+            songs.audio = document.querySelector('audio')
+        }
+        function renderListSong() {
+            var list_song = document.querySelector('.list-song')
+            list_song.innerHTML = songs.song_resouce.map((element, index, originArray) => {
+                return `
+                    <li class="song-item" data-id="${index}">
+                        <div class="song-item-image" style="background-image: url(${element.image})"></div>
+                        <div class="song-item-description">
+                            <h4 class="song-item-name">${element.name}</h4>
+                            <p class="song-item-author">${element.author}</p>
+                        </div>  
+                        <i class="fas fa-ellipsis-h song-item-option"></i>
+                    </li>
+                `
+            }).join('')
+            document.querySelector(`.song-item[data-id="${songs.current_index}"]`).classList.add('active')
+        }
+        function eventHandler() {
+           eventHandlerScroll()
+           eventHandlerPlayButton()
+           eventHandlerNextButton()
+           eventHandlerBackButton()
+           eventHandlerLoopButton()
+           eventHandlerRandomButton()
+           evevntHandlerSeekMp3()
+           eventHandlerMp3Play()
+           eventHandlerMp3End()
+           eventSongClick()
+        }
+        function eventSongClick() {
+            var list_song = document.querySelectorAll('.song-item')
+            list_song.forEach((element, index) => {
+                element.onclick = function() {
+                    document.querySelector('.song-item.active').classList.remove('active')
+                    element.classList.add('active')
+                    songs.current_index = Number.parseInt(element.getAttribute('data-id'))
+                    renderCurrentSong()
+                    autoPlay()
+                }
+            })
+           
+        }
+        function eventHandlerMp3End() {
+            songs.audio.onended = function() {
+                songs.songs_played.add(songs.current_index);
+                if(songs.is_loop || songs.is_random) {
+                    if(songs.is_loop) {
+                        renderCurrentSong()
+                        // renderListSong()
+                        activeSongItem()
+                        autoPlay()
+                    } else {
+                        songs.current_index = randomSong()
+                        renderCurrentSong()
+                        activeSongItem()
+                        autoPlay()
+                    }
+                } else {
+                    songs.current_index = songs.current_index == songs.song_resouce.length - 1? 0: songs.current_index + 1
+                    renderCurrentSong()
+                    activeSongItem()
+                    autoPlay()
+                }
+            }
+        }
+        function evevntHandlerSeekMp3() {
+            var progress = document.querySelector('.progress')
+            progress.oninput = function() {
+                songs.audio.currentTime = songs.audio.duration * this.value / this.max
+            }
+        }
+        function eventHandlerMp3Play() {
+            var progress = document.querySelector('.progress')
+            songs.audio.ontimeupdate = function() {
+                if(this.currentTime / this.duration * progress.max) {
+                    progress.value = this.currentTime / this.duration * progress.max
+                } else {
+                    progress.value = 0
+                }
+        
+            }
+        }
+        function eventHandlerLoopButton() {
+            var loop_button = document.querySelector('.loop-button')
+            var random_button = document.querySelector('.random-button')
+            loop_button.onclick = function() {
+                songs.is_loop = !songs.is_loop
+                songs.is_random = false
+                loop_button.classList.toggle('active')
+                if( document.querySelector('.random-button.active')) {
+                    random_button.classList.remove('active')
+                }
+            }
+        }
+        function eventHandlerRandomButton() {
+            var random_button =  document.querySelector('.random-button')
+            var loop_button = document.querySelector('.loop-button')
+            random_button.onclick = function() {
+                songs.is_random = !songs.is_random
+                songs.is_loop = false
+                random_button.classList.toggle('active')
+                if(document.querySelector('.loop-button.active')) {
+                    loop_button.classList.remove('active')
+                }
+            }
+        }
+        function eventHandlerPlayButton() {
+            var play_button = document.querySelector('.play-button')
+            var song_image = document.querySelector('.song-image')
+            play_button.onclick = (e) => {
+                songs.is_play = !songs.is_play
+                play_button.classList.toggle('play')
+                if(songs.is_play) {
+                    songs.audio.play()
+                    songs.song_image_animate.play()
+                } else {
+                    songs.audio.pause()
+                    songs.song_image_animate.pause()
+                }
+            }
+        }
+        function eventHandlerNextButton() {
+            var next_button = document.querySelector('.next-button')
+            next_button.onclick = (e) => {
+                songs.songs_played.add(songs.current_index)
+                if(songs.is_random) {
+                    songs.current_index = randomSong()
+                    renderCurrentSong()
+                    activeSongItem()
+                    autoPlay()
+                } else {
+                    songs.current_index = songs.current_index == songs.song_resouce.length - 1? 0: songs.current_index + 1
+                    renderCurrentSong()
+                    activeSongItem()
+                    autoPlay()
+                }
+            }
+        }
+        function eventHandlerBackButton() {
+            var back_button = document.querySelector('.back-button')
+            back_button.onclick = (e) => {
+                songs.songs_played.add(songs.current_index)
+                if(songs.is_random) {
+                    songs.current_index = randomSong()
+                    renderCurrentSong()
+                    activeSongItem()
+                    autoPlay()
+                } else {
+                    songs.current_index = songs.current_index == 0? songs.song_resouce.length - 1: songs.current_index - 1
+                    renderCurrentSong()
+                    activeSongItem()
+                    autoPlay()
+                }
+            }
+        }
+        function eventHandlerScroll() {
+            var list_song = document.querySelector('.list-song');
+            var song_block = document.querySelector('.song')
+            var song_image_wrapper = document.querySelector('.song-image-wrapper');
+            var song_image = document.querySelector('.song-image')
+            var song_image_width = window.getComputedStyle(song_image).width;
+            var song_image_wrapper_padding = window.getComputedStyle(song_image_wrapper).paddingLeft;
+            document.querySelector('.container') .onscroll = function(e) {
+               song_image_wrapper.style.padding = `0px ${Number.parseFloat(song_image_wrapper_padding) + e.target.scrollTop}px`
+               list_song.style.marginTop = song_block.offsetHeight + 6 + 'px'
+               song_image.style.opacity = Number.parseFloat(window.getComputedStyle(song_image).width) / Number.parseFloat(song_image_width)
+            }
+        }
+        function activeSongItem () {
+            document.querySelector('.song-item.active').classList.remove('active')
+            document.querySelector(`.song-item[data-id="${songs.current_index}"]`).classList.add('active')
+            autoScroll()
+        }
+        function autoScroll() {
+            var song_item_style = window.getComputedStyle(document.querySelector('.song-item'))
+            var heightItem = Number.parseFloat(song_item_style.marginTop) + Number.parseFloat(song_item_style.height)
+            document.querySelector('.container').scrollTo(0, heightItem * songs.current_index)
+        }
+        function autoPlay() {
+            songs.is_play = true
+            document.querySelector('.play-button').classList.add('play')
+            songs.audio.play()
+            songs.song_image_animate.play()
+        }
+        function randomSong() {
+            if(songs.songs_played.size == songs.song_resouce.length) {
+                songs.songs_played = new Set()
+            }
+            var intRandom 
+            while (true) {
+                intRandom = Math.floor(Math.random() * songs.song_resouce.length)
+                if(!songs.songs_played.has(intRandom) && intRandom != songs.current_index) {
+                    break
+                }
+            }
+            return intRandom
+        }
+        function startRender() {
+            var list_song = document.querySelector('.list-song');
+            var song_block = document.querySelector('.song')
+            list_song.style.marginTop = song_block.offsetHeight + 20 + 'px'
+        }
+    </script>
+</body>
+</html>
